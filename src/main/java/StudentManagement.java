@@ -24,7 +24,8 @@ public class StudentManagement {
                 System.out.println("3. View all students and grades");
                 System.out.println("4. View a specific student's report");
                 System.out.println("5. Remove student");
-                System.out.println("6. Exit");
+                System.out.println("6. Get top performer");
+                System.out.println("7. Exit");
                 System.out.println();
                 System.out.println("Choose your option: ");
                 int option = Integer.parseInt(scanner.nextLine());
@@ -50,6 +51,8 @@ public class StudentManagement {
                     System.out.println("Enter student name: ");
                     String name = scanner.nextLine().toLowerCase();
                     removeStudent(name);
+                } else if (option == 6) {
+                    topPerformer();
                 } else {
                     saveToFile();
                     exitSystem();
@@ -129,6 +132,35 @@ public class StudentManagement {
             System.out.println("Student removed");
         }else {
             System.out.println("Student not found");
+        }
+    }
+
+    void topPerformer(){
+        double highest = Integer.MIN_VALUE;
+        String topStudent = null;
+        for (Map.Entry<String, ArrayList<Integer>> entry: students.entrySet()){
+            ArrayList<Integer> grades = entry.getValue();
+
+            //calculate the sum of grades
+            int sum = 0;
+            for (int mark: grades){
+                sum += mark;
+            }
+            double average;
+            if (grades.size() == 0){
+                average = 0;
+            }else {
+                average = (double) sum/ grades.size();
+            }
+                if (average > highest){
+                    highest = average;
+                    topStudent = entry.getKey();
+            }
+        }
+        if (topStudent != null){
+            System.out.println("The top student is: "+ topStudent +",with an average of:" + highest);
+        }else {
+            System.out.println("Top student not found");
         }
     }
     void exitSystem(){
