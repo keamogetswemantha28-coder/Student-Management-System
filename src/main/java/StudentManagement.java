@@ -23,7 +23,8 @@ public class StudentManagement {
                 System.out.println("2. Add grade to student");
                 System.out.println("3. View all students and grades");
                 System.out.println("4. View a specific student's report");
-                System.out.println("5. Exit");
+                System.out.println("5. Remove student");
+                System.out.println("6. Exit");
                 System.out.println();
                 System.out.println("Choose your option: ");
                 int option = Integer.parseInt(scanner.nextLine());
@@ -45,7 +46,11 @@ public class StudentManagement {
                     System.out.println("Enter student name: ");
                     String name = scanner.nextLine().toLowerCase();
                     viewStudent(name);
-                }else {
+                } else if (option == 5) {
+                    System.out.println("Enter student name: ");
+                    String name = scanner.nextLine().toLowerCase();
+                    removeStudent(name);
+                } else {
                     saveToFile();
                     exitSystem();
                 }
@@ -67,7 +72,11 @@ public class StudentManagement {
     void addGrade(String name, int mark){
         //check student's name and add mark
         if (students.containsKey(name)) {
-            students.get(name).add(mark);
+            if (mark >= 0 && mark <= 100){
+                students.get(name).add(mark);
+            }else {
+                System.out.println("Mark must be between 0 and 100");
+            }
         }else {
             System.out.println("Student not found");
         }
@@ -114,6 +123,14 @@ public class StudentManagement {
             System.out.println("Student not found");
         }
     }
+
+    void removeStudent(String name){
+        if (students.remove(name) != null){
+            System.out.println("Student removed");
+        }else {
+            System.out.println("Student not found");
+        }
+    }
     void exitSystem(){
         System.exit(0);
     }
@@ -121,7 +138,8 @@ public class StudentManagement {
     void saveToFile() {
 
         try {
-            FileWriter myWriter = new FileWriter("studentData.txt");
+            FileWriter myWriter = new FileWriter("studentData.csv");
+            myWriter.write("Name,Grades\n");
             for (Map.Entry<String, ArrayList<Integer>> entry: students.entrySet()){
                 String line = entry.getKey();
                 for (int mark: entry.getValue()){
@@ -136,7 +154,8 @@ public class StudentManagement {
         }
     }
     void loadFromFile(){
-        try(BufferedReader read = new BufferedReader(new FileReader("studentData.txt"))) {
+        try(BufferedReader read = new BufferedReader(new FileReader("studentData.csv"))) {
+            read.readLine();
             String line;
             while ((line = read.readLine()) != null){
                 //split into several parts
