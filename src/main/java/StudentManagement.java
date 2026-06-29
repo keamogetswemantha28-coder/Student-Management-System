@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.util.*;
 
 public class StudentManagement {
-    private HashMap<String, ArrayList<Integer>> students;
+    private HashMap<String, Student> students;
 
     public StudentManagement(){
         this.students = new HashMap<>();
     }
 
     public void run(){
-        loadFromFile();
+        //loadFromFile();
         Scanner scanner = new Scanner(System.in);
 
         while (true){
@@ -54,7 +54,7 @@ public class StudentManagement {
                 } else if (option == 6) {
                     topPerformer();
                 } else {
-                    saveToFile();
+                    //saveToFile();
                     exitSystem();
                 }
             }catch (NumberFormatException e){
@@ -66,9 +66,10 @@ public class StudentManagement {
 
     }
     void addStudent(String name){
+        Student student = new Student(name);
         if (!students.containsKey(name)){
             //add the student name with a new list
-            students.put(name, new ArrayList<>());
+            students.put(name, student);
         }
     }
 
@@ -76,7 +77,7 @@ public class StudentManagement {
         //check student's name and add mark
         if (students.containsKey(name)) {
             if (mark >= 0 && mark <= 100){
-                students.get(name).add(mark);
+                students.get(name).addGrade(mark);
             }else {
                 System.out.println("Mark must be between 0 and 100");
             }
@@ -85,20 +86,11 @@ public class StudentManagement {
         }
     }
     void viewAll(){
-        for (Map.Entry<String, ArrayList<Integer>> entry : students.entrySet()){
-            ArrayList<Integer> grades = entry.getValue();
+        for (Map.Entry<String, Student> entry : students.entrySet()){
+            Student student = entry.getValue();
+            ArrayList<Integer> grades = student.getGrades();
 
-            int sum = 0;
-            for (int mark : grades){
-                sum += mark;
-            }
-
-            double average;
-            if (grades.size() == 0){
-                average = 0;
-            }else {
-                average = (double) sum/ grades.size();
-            }
+            double average = student.getAverage();
             System.out.println("Student: "+ entry.getKey());
             System.out.println("Grades: "+ grades);
             System.out.println("Average: " + average);
@@ -106,19 +98,11 @@ public class StudentManagement {
     }
     void viewStudent(String name){
         if (students.containsKey(name)){
-            ArrayList<Integer> grades = students.get(name);
+            Student student = students.get(name);
+            ArrayList<Integer> grades = student.getGrades();
 
             //calculate the sum of grades
-            int sum = 0;
-            for (int mark: grades){
-                sum += mark;
-            }
-            double average;
-            if (grades.size() == 0){
-                average = 0;
-            }else {
-                average = (double) sum/ grades.size();
-            }
+            double average = student.getAverage();
             System.out.println("Student: "+ name);
             System.out.println("Grades: " + grades);
             System.out.println("Average: " + average);
@@ -138,20 +122,13 @@ public class StudentManagement {
     void topPerformer(){
         double highest = Integer.MIN_VALUE;
         String topStudent = null;
-        for (Map.Entry<String, ArrayList<Integer>> entry: students.entrySet()){
-            ArrayList<Integer> grades = entry.getValue();
+        for (Map.Entry<String, Student> entry: students.entrySet()){
+            Student student = entry.getValue();
 
-            //calculate the sum of grades
-            int sum = 0;
-            for (int mark: grades){
-                sum += mark;
-            }
-            double average;
-            if (grades.size() == 0){
-                average = 0;
-            }else {
-                average = (double) sum/ grades.size();
-            }
+            //get average
+            double average = student.getAverage();
+
+            //find top student
                 if (average > highest){
                     highest = average;
                     topStudent = entry.getKey();
@@ -165,48 +142,5 @@ public class StudentManagement {
     }
     void exitSystem(){
         System.exit(0);
-    }
-
-    void saveToFile() {
-
-        try {
-            FileWriter myWriter = new FileWriter("studentData.csv");
-            myWriter.write("Name,Grades\n");
-            for (Map.Entry<String, ArrayList<Integer>> entry: students.entrySet()){
-                String line = entry.getKey();
-                for (int mark: entry.getValue()){
-                    line += "," + mark;
-                }
-                myWriter.write(line + "\n");
-            }
-            myWriter.close();
-            System.out.println("Data saved successfully");
-        }catch (IOException e){
-            System.out.println("Error");
-        }
-    }
-    void loadFromFile(){
-        try(BufferedReader read = new BufferedReader(new FileReader("studentData.csv"))) {
-            read.readLine();
-            String line;
-            while ((line = read.readLine()) != null){
-                //split into several parts
-                String[] parts = line.split(",");
-                //get the name
-                String name = parts[0];
-                students.put(name, new ArrayList<>());
-
-                for (int i = 1; i < parts.length; i++){
-                    students.get(name).add(Integer.parseInt(parts[i]));
-                }
-            }
-        }catch (IOException e){
-            System.out.println("Error reading file");
-        }
-    }
-
-    public static void main(String[] args) {
-        StudentManagement management = new StudentManagement();
-        management.run();
     }
 }
