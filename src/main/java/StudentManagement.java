@@ -12,22 +12,27 @@ public class StudentManagement {
     }
 
     public void run(){
-        //loadFromFile();
+        FileHandler fileHandler = new FileHandler();
+        fileHandler.loadFromFile(students);
         Scanner scanner = new Scanner(System.in);
 
         while (true){
             try {
-                System.out.println("***Here are your options***");
+                //System.out.println("***Here are your options***");
 
-                System.out.println("1. Add student");
-                System.out.println("2. Add grade to student");
-                System.out.println("3. View all students and grades");
-                System.out.println("4. View a specific student's report");
-                System.out.println("5. Remove student");
-                System.out.println("6. Get top performer");
-                System.out.println("7. Exit");
-                System.out.println();
+                System.out.println("╔═════════════════════════════════════╗");
+                System.out.println("║     STUDENT MANAGEMENT SYSTEM       ║");
+                System.out.println("║═════════════════════════════════════║");
+                System.out.println("║1. Add student                       ║");
+                System.out.println("║2. Add grade to student              ║");
+                System.out.println("║3. View all students and grades      ║");
+                System.out.println("║4. View a specific student's report  ║");
+                System.out.println("║5. Remove student                    ║");
+                System.out.println("║6. Get top performer                 ║");
+                System.out.println("║7. Exit                              ║");
+                System.out.println("╚═════════════════════════════════════╝");
                 System.out.println("Choose your option: ");
+
                 int option = Integer.parseInt(scanner.nextLine());
                 if (option == 1){
                     System.out.println("Enter student name: ");
@@ -54,7 +59,7 @@ public class StudentManagement {
                 } else if (option == 6) {
                     topPerformer();
                 } else {
-                    //saveToFile();
+                    fileHandler.saveToFile(students);
                     exitSystem();
                 }
             }catch (NumberFormatException e){
@@ -70,6 +75,8 @@ public class StudentManagement {
         if (!students.containsKey(name)){
             //add the student name with a new list
             students.put(name, student);
+        }else {
+            System.out.println("Name already taken!");
         }
     }
 
@@ -139,8 +146,10 @@ public class StudentManagement {
         }else {
             System.out.println("Top student not found");
         }
+
     }
     void exitSystem(){
         System.exit(0);
     }
+
 }
